@@ -4,6 +4,7 @@ const connectDB = require("./config/db");
 const userRouter = require("./routers/userRouter");
 const chatRouter = require("./routers/chatRouter");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
+const path = require("path");
 
 const app = express();
 
