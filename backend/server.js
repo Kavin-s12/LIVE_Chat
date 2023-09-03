@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const userRouter = require("./routers/userRouter");
 const chatRouter = require("./routers/chatRouter");
+const messageRouter = require("./routers/messageRouter");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const path = require("path");
 
@@ -15,10 +16,12 @@ app.use(express.json());
 
 app.use("/api/user", userRouter);
 app.use("/api/chat", chatRouter);
+app.use("/api/message", messageRouter);
+
 const _dirname = path.resolve();
 
 if (process.env.NODE_ENV == "production") {
-  app.use(express.static(path.join(_dirname, "../frontend/build")));
+  app.use(express.static(path.join(_dirname, "/frontend/build")));
 
   app.get("*", (req, res) =>
     res.sendFile(path.resolve(_dirname, "frontend", "build", "index.html"))

@@ -27,8 +27,8 @@ import { ChatState } from "../context/ChatProvider";
 import ProfileModal from "./ProfileModal";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import ChatLoading from "./ChatLoading";
-import UserListItem from "./UserListItem";
+import ChatLoading from "./chat/ChatLoading";
+import UserListItem from "./listing_User/UserListItem";
 
 const SideDrawer = () => {
   const [search, setSearch] = useState("");
