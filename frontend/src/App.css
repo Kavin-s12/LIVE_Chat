@@ -7,3 +7,9 @@
     background-size: cover;
     background-position: center;
 }
+
+.messages{
+    display: flex;
+    flex-direction: column;
+    /* overflow-y: scroll; */
+}

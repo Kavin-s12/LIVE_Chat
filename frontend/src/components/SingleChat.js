@@ -14,6 +14,7 @@ import { getSenderName, getSenderFull } from "../config/chatFunctions";
 import ProfileModal from "./ProfileModal";
 import UpdateGroupChatModal from "./chat/UpdateGroupChatModal";
 import axios from "axios";
+import ScrollableChat from "./ScrollableChat";
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState();
@@ -44,7 +45,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         );
 
         setMessages([...messages, data]);
-        console.log(data);
       } catch (error) {
         toast({
           title: "Error occured!",
@@ -128,6 +128,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 <UpdateGroupChatModal
                   fetchAgain={fetchAgain}
                   setFetchAgain={setFetchAgain}
+                  fetchMessages={fetchMessages}
                 />
               </>
             )}
@@ -152,7 +153,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 margin='auto'
               />
             ) : (
-              <div>Message</div>
+              <div className='messages'>
+                <ScrollableChat messages={messages} />
+              </div>
             )}
 
             <FormControl onKeyDown={sendMessage} isRequired mt={3}>
