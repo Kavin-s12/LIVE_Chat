@@ -15,15 +15,45 @@ import ProfileModal from "./ProfileModal";
 import UpdateGroupChatModal from "./chat/UpdateGroupChatModal";
 import axios from "axios";
 import ScrollableChat from "./ScrollableChat";
+import io from "socket.io-client";
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState();
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
+  const [socketConnected, setSocketConnected] = useState(false);
+
+  const ENDPOINT = "http://localhost:5000";
+  var socket, selectedChatCompare;
 
   const toast = useToast();
 
   const { user, selectedChat, setSelectedChat } = ChatState();
+  socket = io(ENDPOINT);
+
+  useEffect(() => {
+    socket.emit("setup", user);
+    socket.on("connected", () => setSocketConnected(true));
+  }, []);
+
+  useEffect(() => {
+    fetchMessages();
+    selectedChatCompare = selectedChat;
+  }, [selectedChat]);
+
+  useEffect(() => {
+    socket.on("Message Recieved", (newMessageRecieved) => {
+      if (
+        !selectedChatCompare ||
+        selectedChatCompare._id !== newMessageRecieved.chat._id
+      ) {
+        // give notification
+        console.log('are you executing')
+      } else {
+        setMessages([...messages, newMessageRecieved]);
+      }
+    });
+  });
 
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
@@ -45,10 +75,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         );
 
         setMessages([...messages, data]);
+        socket.emit("newMessage", data);
       } catch (error) {
         toast({
           title: "Error occured!",
-          description: error.response.data.message,
+          description: "Failed to load message",
           status: "error",
           duration: 5000,
           isClosable: true,
@@ -60,6 +91,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
+    e.preventDefault();
   };
 
   const fetchMessages = async () => {
@@ -80,11 +112,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
       setMessages(data);
       setLoading(false);
-      console.log(data);
+      socket.emit("join chat", selectedChat._id);
     } catch (error) {
+      console.log(error);
       toast({
         title: "Error occured!",
-        description: error.response.data.message,
+        description: "Failed to load message",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -92,10 +125,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       });
     }
   };
-
-  useEffect(() => {
-    fetchMessages();
-  }, [selectedChat]);
 
   return (
     <>
