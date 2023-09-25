@@ -6,7 +6,6 @@ const chatRouter = require("./routers/chatRouter");
 const messageRouter = require("./routers/messageRouter");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const path = require("path");
-const { Socket } = require("socket.io");
 
 const app = express();
 
@@ -57,8 +56,15 @@ io.on("connection", (socket) => {
     console.log("User joined room " + room);
   });
 
+  socket.on("typing", (room) => {
+    socket.in(room).emit("typing");
+  });
+
+  socket.on("stop typing", (room) => {
+    socket.in(room).emit("stop typing");
+  });
+
   socket.on("newMessage", (newMessageRecieved) => {
-    
     var chat = newMessageRecieved.chat;
 
     if (!chat.users) return console.log("Chat.users not defined");
@@ -66,7 +72,7 @@ io.on("connection", (socket) => {
     chat.users.forEach((user) => {
       if (user._id === newMessageRecieved.sender._id) return;
 
-      socket.in(user._id).emit("Message Recieved",newMessageRecieved);
+      socket.in(user._id).emit("Message Recieved", newMessageRecieved);
     });
   });
 });

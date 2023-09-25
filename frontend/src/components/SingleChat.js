@@ -16,25 +16,28 @@ import UpdateGroupChatModal from "./chat/UpdateGroupChatModal";
 import axios from "axios";
 import ScrollableChat from "./ScrollableChat";
 import io from "socket.io-client";
+var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
-  const [messages, setMessages] = useState();
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [socketConnected, setSocketConnected] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
 
-  const ENDPOINT = "http://localhost:5000";
-  var socket, selectedChatCompare;
+  const ENDPOINT = "https://live-chat-ggzz.onrender.com"; //"http://localhost:5000";
 
   const toast = useToast();
 
   const { user, selectedChat, setSelectedChat } = ChatState();
-  socket = io(ENDPOINT);
 
   useEffect(() => {
-    
+    socket = io(ENDPOINT);
     socket.emit("setup", user);
     socket.on("connected", () => setSocketConnected(true));
+    socket.on("typing", () => setIsTyping(true));
+    socket.on("stop typing", () => setIsTyping(false));
   }, []);
 
   useEffect(() => {
@@ -49,19 +52,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         selectedChatCompare._id !== newMessageRecieved.chat._id
       ) {
         // give notification
-        console.log(!selectedChatCompare)
-        console.log(selectedChatCompare)
-        console.log(newMessageRecieved)
-        console.log('are you executing')
       } else {
         setMessages([...messages, newMessageRecieved]);
       }
     });
-    console.log('I am')
-  },[]);
+  });
 
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
+      socket.emit("stop typing", selectedChat._id);
       try {
         const config = {
           headers: {
@@ -96,7 +95,24 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
-    e.preventDefault();
+
+    if (!socketConnected) return;
+
+    if (!typing) {
+      setTyping(true);
+      socket.emit("typing", selectedChat._id);
+    }
+
+    let lastTypingTime = new Date().getTime();
+    const timeLength = 3000;
+    setTimeout(() => {
+      var timeNow = new Date().getTime();
+      var timediff = timeNow - lastTypingTime;
+      if (timediff >= timeLength && typing) {
+        socket.emit("stop typing", selectedChat._id);
+        setTyping(false);
+      }
+    }, timeLength);
   };
 
   const fetchMessages = async () => {
@@ -119,7 +135,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       setLoading(false);
       socket.emit("join chat", selectedChat._id);
     } catch (error) {
-      console.log(error);
       toast({
         title: "Error occured!",
         description: "Failed to load message",
@@ -191,6 +206,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 <ScrollableChat messages={messages} />
               </div>
             )}
+
+            {isTyping ? <p>loading</p> : <></>}
 
             <FormControl onKeyDown={sendMessage} isRequired mt={3}>
               <Input
