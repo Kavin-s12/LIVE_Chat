@@ -32,6 +32,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   socket = io(ENDPOINT);
 
   useEffect(() => {
+    
     socket.emit("setup", user);
     socket.on("connected", () => setSocketConnected(true));
   }, []);
@@ -48,12 +49,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         selectedChatCompare._id !== newMessageRecieved.chat._id
       ) {
         // give notification
+        console.log(!selectedChatCompare)
+        console.log(selectedChatCompare)
+        console.log(newMessageRecieved)
         console.log('are you executing')
       } else {
         setMessages([...messages, newMessageRecieved]);
       }
     });
-  });
+    console.log('I am')
+  },[]);
 
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
