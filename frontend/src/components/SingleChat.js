@@ -16,6 +16,9 @@ import UpdateGroupChatModal from "./chat/UpdateGroupChatModal";
 import axios from "axios";
 import ScrollableChat from "./ScrollableChat";
 import io from "socket.io-client";
+import Lottie from "react-lottie";
+import animationData from "../animations/typing.json";
+
 var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
@@ -26,11 +29,21 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  const ENDPOINT = "https://live-chat-ggzz.onrender.com"; //"http://localhost:5000";
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+
+  const ENDPOINT = "http://localhost:5000"; //"https://live-chat-ggzz.onrender.com";
 
   const toast = useToast();
 
-  const { user, selectedChat, setSelectedChat } = ChatState();
+  const { user, selectedChat, setSelectedChat, notification, setNotification } =
+    ChatState();
 
   useEffect(() => {
     socket = io(ENDPOINT);
@@ -52,6 +65,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         selectedChatCompare._id !== newMessageRecieved.chat._id
       ) {
         // give notification
+        if (!notification.includes(newMessageRecieved)) {
+          setNotification([newMessageRecieved, ...notification]);
+          setFetchAgain(fetchAgain);
+        }
       } else {
         setMessages([...messages, newMessageRecieved]);
       }
@@ -207,9 +224,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               </div>
             )}
 
-            {isTyping ? <p>loading</p> : <></>}
-
             <FormControl onKeyDown={sendMessage} isRequired mt={3}>
+              {isTyping ? (
+                <Lottie
+                  options={defaultOptions}
+                  width={70}
+                  height={30}
+                  style={{ marginBottom: 15, marginLeft: 0 }}
+                />
+              ) : (
+                <></>
+              )}
               <Input
                 variant='filled'
                 placeholder='Enter a message'

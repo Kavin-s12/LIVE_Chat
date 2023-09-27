@@ -29,6 +29,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ChatLoading from "./chat/ChatLoading";
 import UserListItem from "./listing_User/UserListItem";
+import { getSenderName } from "../config/chatFunctions";
+import NotificationBadge, { Effect } from "react-notification-badge";
 
 const SideDrawer = () => {
   const [search, setSearch] = useState("");
@@ -41,7 +43,14 @@ const SideDrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = React.useRef();
 
-  const { user, setSelectedChat, chats, setChats } = ChatState();
+  const {
+    user,
+    setSelectedChat,
+    chats,
+    setChats,
+    notification,
+    setNotification,
+  } = ChatState();
 
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
@@ -145,10 +154,32 @@ const SideDrawer = () => {
         </Text>
         <div>
           <Menu>
-            <MenuButton p='1'>
+            <MenuButton p={1}>
+              <NotificationBadge
+                count={notification.length}
+                effect={Effect.SCALE}
+              />
               <BellIcon fontSize='2xl' m='1' />
             </MenuButton>
-            {/* <MenuList></MenuList> */}
+            <MenuList pl={2}>
+              {!notification.length && "No new messages"}
+              {notification.map((notify) => (
+                <MenuItem
+                  key={notify._id}
+                  onClick={() => {
+                    setSelectedChat(notify.chat);
+                    setNotification(notification.filter((x) => x != notify));
+                  }}
+                >
+                  {notify.chat.isGroupChat
+                    ? `New messages in ${notify.chat.chatName}`
+                    : `New messages from ${getSenderName(
+                        user,
+                        notify.chat.users
+                      )}`}
+                </MenuItem>
+              ))}
+            </MenuList>
           </Menu>
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
