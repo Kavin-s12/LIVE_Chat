@@ -9,17 +9,20 @@ import {
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ChatState } from "../../context/ChatProvider";
 
 const SignUp = () => {
   const [name, setName] = useState();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [confirmPassword, setConfirmPassword] = useState();
-  const [picture, setPicture] = useState();
+  const [picture, setPicture] = useState("");
   const [loading, setLoading] = useState(false);
 
   const toast = useToast();
   const navigate = useNavigate();
+
+  const { setUser } = ChatState();
 
   const submitHandler = async () => {
     setLoading(true);
@@ -61,6 +64,7 @@ const SignUp = () => {
       );
 
       localStorage.setItem("userInfo", JSON.stringify(data));
+      setUser(data);
 
       toast({
         title: "Registration successful",
@@ -84,7 +88,7 @@ const SignUp = () => {
     setLoading(true);
     if (pic === undefined) {
       toast({
-        title: "Please select an image. undefined",
+        title: "Please select an image.",
         status: "warning",
         duration: 5000,
         isClosable: true,
@@ -118,7 +122,7 @@ const SignUp = () => {
         });
     } else {
       toast({
-        title: "Please select an image.",
+        title: "Please select an image from proper fromat.",
         status: "warning",
         duration: 5000,
         isClosable: true,
@@ -126,9 +130,10 @@ const SignUp = () => {
       setLoading(false);
       return;
     }
-    console.log(picture);
+
     setLoading(false);
   };
+  console.log(picture);
 
   return (
     <VStack spacing='5px'>

@@ -11,5 +11,17 @@
 .messages{
     display: flex;
     flex-direction: column;
-    /* overflow-y: scroll; */
+    overflow-y: hidden;
+}
+
+.message::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.message {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
 }

@@ -80,9 +80,9 @@ const MyChats = ({ fetchAgain }) => {
         borderRadius='lg'
         bg='#F8F8F8'
       >
-        {chats.length ? (
+        {chats?.length ? (
           <Stack>
-            {chats.map((chat) => (
+            {chats?.map((chat) => (
               <Box
                 key={chat._id}
                 onClick={() => setSelectedChat(chat)}

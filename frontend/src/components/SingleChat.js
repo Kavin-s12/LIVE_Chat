@@ -38,7 +38,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     },
   };
 
-  const ENDPOINT = "https://live-chat-ggzz.onrender.com"; //"http://localhost:5000";
+  const ENDPOINT = "https://live-chat-ggzz.onrender.com"; //"http://localhost:5000"; //;
 
   const toast = useToast();
 

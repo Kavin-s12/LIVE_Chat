@@ -52,6 +52,7 @@ const registerUser = asyncHandler(async (req, res) => {
       _id: createUser._id,
       name: createUser.name,
       email: createUser.email,
+      picture: createUser.picture,
       token: generateToken(createUser._id),
     });
   } else {

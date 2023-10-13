@@ -45,6 +45,7 @@ const SideDrawer = () => {
 
   const {
     user,
+    setUser,
     setSelectedChat,
     chats,
     setChats,
@@ -54,6 +55,10 @@ const SideDrawer = () => {
 
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
+    setUser();
+    setSelectedChat();
+    setChats([]);
+    setNotification([]);
     navigate("/");
   };
 
@@ -156,14 +161,14 @@ const SideDrawer = () => {
           <Menu>
             <MenuButton p={1}>
               <NotificationBadge
-                count={notification.length}
+                count={notification?.length}
                 effect={Effect.SCALE}
               />
               <BellIcon fontSize='2xl' m='1' />
             </MenuButton>
             <MenuList pl={2}>
-              {!notification.length && "No new messages"}
-              {notification.map((notify) => (
+              {!notification?.length && "No new messages"}
+              {notification?.map((notify) => (
                 <MenuItem
                   key={notify._id}
                   onClick={() => {

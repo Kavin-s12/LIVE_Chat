@@ -9,6 +9,7 @@ import {
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ChatState } from "../../context/ChatProvider";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -17,6 +18,8 @@ const Login = () => {
 
   const toast = useToast();
   const navigate = useNavigate();
+
+  const { setUser } = ChatState();
 
   const submitHandler = async () => {
     setLoading(true);
@@ -34,6 +37,7 @@ const Login = () => {
       );
 
       localStorage.setItem("userInfo", JSON.stringify(data));
+      setUser(data);
 
       toast({
         title: "Login successful",

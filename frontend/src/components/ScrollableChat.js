@@ -12,7 +12,7 @@ import { Avatar, Tooltip } from "@chakra-ui/react";
 const ScrollableChat = ({ messages }) => {
   const { user } = ChatState();
   return (
-    <ScrollableFeed>
+    <ScrollableFeed className='message'>
       {messages &&
         messages.map((m, i) => (
           <div style={{ display: "flex" }} key={m._id}>
